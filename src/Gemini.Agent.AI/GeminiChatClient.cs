@@ -36,12 +36,12 @@ public class GeminiChatClient : IChatClient
         CancellationToken cancellationToken = new CancellationToken())
     {
         client = new HttpClient();
-        var response = await client.GetAsync(new Uri(
+        var response = await client.GetStreamAsync(new Uri(
                 $"https://generativelanguage.googleapis.com/v1beta/models/{_modelName}:streamGenerateContent"),
             cancellationToken);
 
-        return new ChatResponse(new ChatMessage(ChatRole.Assistant,
-            await response.Content.ReadAsStringAsync(cancellationToken)));
+        //TODO: implement
+        yield return null!;
     }
 
     public object? GetService(Type serviceType, object? serviceKey = null)
