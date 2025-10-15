@@ -40,11 +40,9 @@ public class ChatClient
         }
     }
 
+    //TODO: ??? how to take api key from ApiKeyCredential
     private static string ExtractApiKey(ApiKeyCredential credential)
     {
-        // ApiKeyCredential stores the key internally, we need to access it
-        // For now, we'll need to pass the key directly in the constructor
-        // This is a workaround since ApiKeyCredential doesn't expose the key
         var field = typeof(ApiKeyCredential).GetField("_key", BindingFlags.NonPublic | BindingFlags.Instance);
         return field?.GetValue(credential) as string ??
                throw new InvalidOperationException("Unable to extract API key");
