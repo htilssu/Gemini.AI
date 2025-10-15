@@ -1,51 +1,93 @@
-﻿using Microsoft.Extensions.AI;
+using System.Runtime.CompilerServices;
+using Gemini.Content;
+using Gemini.Content.Agent.AI.Extensions;
+using Microsoft.Extensions.AI;
+using ChatMessage = Microsoft.Extensions.AI.ChatMessage;
 
 namespace Gemini.Agent.AI;
 
 public class GeminiChatClient : IChatClient
 {
-    private HttpClient client = null!;
-    private string _modelName = "gemini-2.5-flash-lite";
+    private readonly ChatClient _client;
 
-    public GeminiChatClient()
+    public ChatClientMetadata Metadata { get; }
+
+    public GeminiChatClient(ChatClient chatClient, string? modelId = null)
     {
-        client.BaseAddress = new Uri("");
+        _client = chatClient ?? throw new ArgumentNullException(nameof(chatClient));
+        Metadata = new ChatClientMetadata(providerName: "Gemini", defaultModelId: modelId);
     }
 
     public void Dispose()
     {
-        client.Dispose();
     }
 
-    public async Task<ChatResponse> GetResponseAsync(IEnumerable<ChatMessage> messages,
+    public Task<ChatResponse> GetResponseAsync(
+        IEnumerable<ChatMessage> messages,
         ChatOptions? options = null,
-        CancellationToken cancellationToken = new CancellationToken())
+        CancellationToken cancellationToken = default)
     {
-        client = new HttpClient();
-        var response = await client.GetAsync(new Uri(
-                $"https://generativelanguage.googleapis.com/v1beta/models/{_modelName}:generateContent"),
-            cancellationToken);
+        return GetResponseAsyncImpl(messages, options, cancellationToken);
+    }
 
-        return new ChatResponse(new ChatMessage(ChatRole.Assistant,
-            await response.Content.ReadAsStringAsync(cancellationToken)));
+    private async Task<ChatResponse> GetResponseAsyncImpl(
+        IEnumerable<ChatMessage> messages,
+        ChatOptions? options,
+        CancellationToken cancellationToken)
+    {
+        var geminiMessages = ConvertToGeminiMessages(messages);
+        var geminiOptions = ConvertToGeminiOptions(options);
+
+        var completion = await _client.CompleteChatAsync(geminiMessages, geminiOptions, cancellationToken)
+            .ConfigureAwait(false);
+
+        return new ChatResponse(
+            new ChatMessage(ChatRole.Assistant, completion.Content));
     }
 
     public async IAsyncEnumerable<ChatResponseUpdate> GetStreamingResponseAsync(
         IEnumerable<ChatMessage> messages,
         ChatOptions? options = null,
-        CancellationToken cancellationToken = new CancellationToken())
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        client = new HttpClient();
-        var response = await client.GetStreamAsync(new Uri(
-                $"https://generativelanguage.googleapis.com/v1beta/models/{_modelName}:streamGenerateContent"),
-            cancellationToken);
+        var geminiMessages = ConvertToGeminiMessages(messages);
+        var geminiOptions = ConvertToGeminiOptions(options);
 
-        //TODO: implement
-        yield return null!;
+        await foreach (var update in _client
+                           .CompleteChatStreamingAsync(geminiMessages, geminiOptions, cancellationToken)
+                           .ConfigureAwait(false))
+        {
+            yield return new ChatResponseUpdate(ChatRole.Assistant, update.ContentUpdate);
+        }
     }
 
     public object? GetService(Type serviceType, object? serviceKey = null)
     {
-        throw new NotImplementedException();
+        return serviceType == typeof(ChatClient) ? _client : null;
+    }
+
+    public TService? GetService<TService>(object? key = null) where TService : class
+    {
+        return GetService(typeof(TService), key) as TService;
+    }
+
+    private IEnumerable<Content.ChatMessage> ConvertToGeminiMessages(
+        IEnumerable<ChatMessage> messages)
+    {
+        return messages.Select(message => message.ToGeminiChatMessage());
+    }
+
+    private ChatCompletionOptions? ConvertToGeminiOptions(ChatOptions? options)
+    {
+        if (options == null)
+            return null;
+
+        return new ChatCompletionOptions
+        {
+            Temperature = (double?)options.Temperature,
+            TopP = options.TopP,
+            MaxTokens = options.MaxOutputTokens,
+            StopSequences = options.StopSequences?.ToList()
+        };
     }
 }

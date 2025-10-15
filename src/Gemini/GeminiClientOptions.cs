@@ -1,12 +1,12 @@
 ﻿using System.ClientModel.Primitives;
 
-namespace Gemini.Agent.AI;
+namespace Gemini.Content;
 
 public class GeminiClientOptions : ClientPipelineOptions
 {
-    private Uri _endpoint;
-    
-    public Uri Endpoint
+    private Uri? _endpoint;
+
+    public Uri? Endpoint
     {
         get => _endpoint;
         set

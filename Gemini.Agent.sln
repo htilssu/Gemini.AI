@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gemini.Agent.AI", "src\Gemi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2D22E17B-CB63-4BE8-BFAC-2816B272A473}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gemini", "src\Gemini\Gemini.csproj", "{0D8D78F4-97C7-4803-907A-116DDAD14D1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,11 +15,16 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8AF98BE3-5EB7-434D-80AF-EA77D7CB4FD6} = {0FFEC9B0-FACA-4130-8623-B36EA9DA68F4}
+		{0D8D78F4-97C7-4803-907A-116DDAD14D1D} = {0FFEC9B0-FACA-4130-8623-B36EA9DA68F4}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{8AF98BE3-5EB7-434D-80AF-EA77D7CB4FD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8AF98BE3-5EB7-434D-80AF-EA77D7CB4FD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AF98BE3-5EB7-434D-80AF-EA77D7CB4FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AF98BE3-5EB7-434D-80AF-EA77D7CB4FD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D8D78F4-97C7-4803-907A-116DDAD14D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D8D78F4-97C7-4803-907A-116DDAD14D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D8D78F4-97C7-4803-907A-116DDAD14D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D8D78F4-97C7-4803-907A-116DDAD14D1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
