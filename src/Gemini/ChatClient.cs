@@ -39,8 +39,7 @@ public class ChatClient
             _options.Endpoint = new Uri(DefaultEndpoint);
         }
     }
-
-    //TODO: ??? how to take api key from ApiKeyCredential
+    
     private static string ExtractApiKey(ApiKeyCredential credential)
     {
         var field = typeof(ApiKeyCredential).GetField("_key", BindingFlags.NonPublic | BindingFlags.Instance);

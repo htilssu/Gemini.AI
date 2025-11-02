@@ -22,18 +22,10 @@ public class GeminiChatClient : IChatClient
     {
     }
 
-    public Task<ChatResponse> GetResponseAsync(
+    public async Task<ChatResponse> GetResponseAsync(
         IEnumerable<ChatMessage> messages,
         ChatOptions? options = null,
         CancellationToken cancellationToken = default)
-    {
-        return GetResponseAsyncImpl(messages, options, cancellationToken);
-    }
-
-    private async Task<ChatResponse> GetResponseAsyncImpl(
-        IEnumerable<ChatMessage> messages,
-        ChatOptions? options,
-        CancellationToken cancellationToken)
     {
         var geminiMessages = ConvertToGeminiMessages(messages);
         var geminiOptions = ConvertToGeminiOptions(options);
@@ -84,7 +76,7 @@ public class GeminiChatClient : IChatClient
 
         return new ChatCompletionOptions
         {
-            Temperature = (double?)options.Temperature,
+            Temperature = options.Temperature,
             TopP = options.TopP,
             MaxTokens = options.MaxOutputTokens,
             StopSequences = options.StopSequences?.ToList()
